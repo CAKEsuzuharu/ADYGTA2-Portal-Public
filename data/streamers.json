@@ -1,0 +1,16 @@
+{
+  "keywords": ["ADYGTA", "ADYGTA2", "あでぃよんGTA", "adygta", "adygta2"],
+  "filterByKeyword": true,
+  "streamers": [
+    {
+      "name": "テスト",
+      "platform": "youtube",
+      "url": "https://www.youtube.com/@Addition_04"
+    },
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "url": "https://www.twitch.tv/cakesuzuharu"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "updatedAt": "2026-06-03T09:14:30.926Z",
+  "liveCount": 1,
+  "totalViewers": 464,
+  "streams": [
+    {
+      "name": "テスト",
+      "platform": "youtube",
+      "status": "LIVE",
+      "title": "【24H NEWS LIVE】 最新ニュース ライブ配信中 ──24H LATEST NEWS LIVE NOW from JAPAN, Tokyo, NIPPON TV（日テレNEWS LIVE）",
+      "viewers": 464,
+      "image": "https://i.ytimg.com/vi/t9kwjZBLI-A/hqdefault_live.jpg",
+      "url": "https://www.youtube.com/watch?v=t9kwjZBLI-A",
+      "startedAt": "2025-01-27T04:10:34Z"
+    },
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "status": "OFFLINE",
+      "title": "配信情報取得待ち",
+      "viewers": 0,
+      "image": "./assets/stream-2.jpg",
+      "url": "https://www.twitch.tv/relaxingsoundschannel"
+    }
+  ]
+}

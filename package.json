@@ -1,0 +1,9 @@
+{
+  "name": "adygta2-portal-web",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "update:streams": "node scripts/update-streams.mjs",
+    "dev": "npx serve ."
+  }
+}
