@@ -49,11 +49,30 @@ function parseCSV(text) {
     rows.push(row);
   }
 
-  return rows;
+  return rows.filter((r) => r.some((cell) => String(cell || "").trim() !== ""));
+}
+
+function isEnabled(value = "") {
+  const v = String(value).trim().toLowerCase();
+  return v === "true" || v === "1" || v === "yes" || v === "on" || v === "有効";
+}
+
+function normalizePlatform(value = "") {
+  return String(value).trim().toLowerCase();
+}
+
+function normalizeId(value = "") {
+  return String(value).trim();
 }
 
 /* -------------------------
    Streamers Sheet
+   Required columns:
+   enabled | name | platform | id
+
+   id:
+   - twitch  = login name (ex: cakesuzuharu)
+   - youtube = channelId  (ex: UCxxxxxxxxxxxxxxxxxxxxxx)
 -------------------------- */
 
 const res = await fetch(csvUrl);
@@ -63,8 +82,12 @@ if (!res.ok) {
 }
 
 const csv = await res.text();
-
 const rows = parseCSV(csv);
+
+if (!rows.length) {
+  throw new Error("Streamers sheet is empty.");
+}
+
 const headers = rows.shift().map((h) => h.trim().toLowerCase());
 
 const streamers = rows
@@ -77,31 +100,24 @@ const streamers = rows
 
     return obj;
   })
-  .filter((r) => {
-    const enabled = String(
-      r.enable || r.enabled || ""
-    ).toLowerCase();
-
-    return (
-      enabled === "true" ||
-      enabled === "1" ||
-      enabled === "yes" ||
-      enabled === "on"
-    );
-  })
-  .filter((r) => r.name && r.platform && r.url)
+  .filter((r) => isEnabled(r.enabled || r.enable))
   .map((r) => ({
     name: r.name,
-    platform: r.platform.toLowerCase(),
-    url: r.url
-  }));
+    platform: normalizePlatform(r.platform),
+    id: normalizeId(r.id || r.login || r.channelid || r.channel_id || r.url)
+  }))
+  .filter((r) => r.name && (r.platform === "twitch" || r.platform === "youtube") && r.id);
 
 /* -------------------------
    Settings Sheet
+   Required columns:
+   key | value
+
+   filterByKeyword | TRUE/FALSE
+   keywords        | ADYGTA,ADYGTA2,あでぃよんGTA
 -------------------------- */
 
 let filterByKeyword = true;
-
 let keywords = [
   "ADYGTA",
   "ADYGTA2",
@@ -114,13 +130,10 @@ if (settingsCsvUrl) {
   const settingsRes = await fetch(settingsCsvUrl);
 
   if (!settingsRes.ok) {
-    throw new Error(
-      `Failed to fetch settings CSV: ${settingsRes.status}`
-    );
+    throw new Error(`Failed to fetch settings CSV: ${settingsRes.status}`);
   }
 
   const settingsCsv = await settingsRes.text();
-
   const settingsRows = parseCSV(settingsCsv);
 
   if (settingsRows.length > 0) {
@@ -138,21 +151,14 @@ if (settingsCsvUrl) {
       });
 
       if (obj.key) {
-        settings[obj.key.trim().toLowerCase()] =
-          (obj.value || "").trim();
+        settings[obj.key.trim().toLowerCase()] = (obj.value || "").trim();
       }
     });
 
     console.log("SETTINGS =", settings);
 
     if (settings.filterbykeyword !== undefined) {
-      const v = settings.filterbykeyword.toLowerCase();
-
-      filterByKeyword =
-        v === "true" ||
-        v === "1" ||
-        v === "yes" ||
-        v === "on";
+      filterByKeyword = isEnabled(settings.filterbykeyword);
     }
 
     if (settings.keywords) {
@@ -180,6 +186,4 @@ await fs.writeFile(
   "utf8"
 );
 
-console.log(
-  `synced data/streamers.json (${streamers.length} streamers)`
-);
+console.log(`synced data/streamers.json (${streamers.length} streamers)`);

@@ -137,7 +137,7 @@ async function loadStreams() {
   renderStreams(fallbackStreams);
 
   try {
-    const response = await fetch("./data/streams.json", { cache: "no-store" });
+    const response = await fetch(`./data/streams.json?t=${Date.now()}`, { cache: "no-store" });
 
     if (!response.ok) {
       throw new Error("stream json not found");

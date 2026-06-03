@@ -18,6 +18,7 @@ async function loadLocalEnv() {
 }
 
 await loadLocalEnv();
+
 const streamersPath = path.join(root, 'data', 'streamers.json');
 const outputPath = path.join(root, 'data', 'streams.json');
 const placeholderImages = [
@@ -34,7 +35,7 @@ const youtubeApiKey = process.env.YOUTUBE_API_KEY || '';
 
 function includesKeyword(title = '', keywords = []) {
   if (!keywords.length) return true;
-  const normalized = title.toLowerCase();
+  const normalized = String(title).toLowerCase();
   return keywords.some((keyword) => normalized.includes(String(keyword).toLowerCase()));
 }
 
@@ -60,7 +61,6 @@ async function getTwitchToken() {
   return token.access_token;
 }
 
-
 function normalizeTwitchLogin(value = '') {
   return String(value)
     .trim()
@@ -70,7 +70,27 @@ function normalizeTwitchLogin(value = '') {
     .toLowerCase();
 }
 
+function normalizeYouTubeChannelId(value = '') {
+  const raw = String(value).trim();
+
+  if (/^UC[a-zA-Z0-9_-]{20,}$/.test(raw)) return raw;
+
+  const channelMatch = raw.match(/youtube\.com\/channel\/(UC[a-zA-Z0-9_-]{20,})/i);
+  if (channelMatch) return channelMatch[1];
+
+  return '';
+}
+
+function normalizeYouTubeHandle(value = '') {
+  return String(value)
+    .trim()
+    .replace(/^https?:\/\/(www\.)?youtube\.com\//i, '')
+    .replace(/^@/, '')
+    .split(/[/?#]/)[0];
+}
+
 function extractTwitchLogin(item) {
+  if (item.id) return normalizeTwitchLogin(item.id);
   if (item.login) return normalizeTwitchLogin(item.login);
   if (item.url && /twitch\.tv\//i.test(item.url)) return normalizeTwitchLogin(item.url);
   return '';
@@ -113,35 +133,28 @@ async function getTwitchStreams(streamers, keywords, filterByKeyword) {
         image: stream.thumbnail_url
           ? stream.thumbnail_url.replace('{width}', '640').replace('{height}', '360')
           : placeholderImages[index % placeholderImages.length],
-        url: base.url || `https://www.twitch.tv/${stream.user_login}`,
+        url: `https://www.twitch.tv/${login || stream.user_login}`,
         startedAt: stream.started_at,
       };
     });
 }
 
-function normalizeYouTubeHandle(value = '') {
-  return String(value).trim().replace(/^https?:\/\/(www\.)?youtube\.com\//, '').replace(/^@/, '').split(/[/?#]/)[0];
-}
-
-function extractYouTubeHandle(item) {
-  if (item.handle) return normalizeYouTubeHandle(item.handle);
-  if (item.url && item.url.includes('youtube.com/@')) return normalizeYouTubeHandle(item.url.split('youtube.com/@')[1]);
-  return '';
-}
-
-function isValidYouTubeChannelId(value = '') {
-  return /^UC[a-zA-Z0-9_-]{20,}$/.test(String(value).trim()) && !String(value).includes('x');
+function getYouTubeChannelId(item) {
+  return normalizeYouTubeChannelId(item.id || item.channelId || item.channelid || item.channel_id || '');
 }
 
 async function resolveYouTubeChannelId(item) {
-  if (isValidYouTubeChannelId(item.channelId)) return item.channelId.trim();
+  const direct = getYouTubeChannelId(item);
+  if (direct) return direct;
 
-  const handle = extractYouTubeHandle(item);
-  if (!handle) return '';
+  // 互換用。新方式では使わない。旧url/handleが残っている場合だけ forHandle で解決する。
+  const handle = item.handle || (item.url && item.url.includes('youtube.com/@') ? item.url.split('youtube.com/@')[1] : '');
+  const normalizedHandle = normalizeYouTubeHandle(handle);
+  if (!normalizedHandle) return '';
 
   const params = new URLSearchParams({
     part: 'id',
-    forHandle: `@${handle}`,
+    forHandle: `@${normalizedHandle}`,
     key: youtubeApiKey,
   });
 
@@ -149,47 +162,78 @@ async function resolveYouTubeChannelId(item) {
   return data.items?.[0]?.id || '';
 }
 
+async function getUploadPlaylistId(channelId) {
+  const params = new URLSearchParams({
+    part: 'contentDetails',
+    id: channelId,
+    key: youtubeApiKey,
+  });
+
+  const data = await fetchJson(`https://www.googleapis.com/youtube/v3/channels?${params}`);
+  return data.items?.[0]?.contentDetails?.relatedPlaylists?.uploads || '';
+}
+
+async function getRecentUploadVideoIds(playlistId, maxResults = 5) {
+  const params = new URLSearchParams({
+    part: 'contentDetails',
+    playlistId,
+    maxResults: String(maxResults),
+    key: youtubeApiKey,
+  });
+
+  const data = await fetchJson(`https://www.googleapis.com/youtube/v3/playlistItems?${params}`);
+  return (data.items || [])
+    .map((item) => item.contentDetails?.videoId)
+    .filter(Boolean);
+}
+
+async function getVideoDetails(videoIds) {
+  if (!videoIds.length) return [];
+
+  const params = new URLSearchParams({
+    part: 'snippet,liveStreamingDetails',
+    id: videoIds.join(','),
+    key: youtubeApiKey,
+  });
+
+  const data = await fetchJson(`https://www.googleapis.com/youtube/v3/videos?${params}`);
+  return data.items || [];
+}
+
+function isLiveVideo(video) {
+  const broadcast = video.snippet?.liveBroadcastContent;
+  const details = video.liveStreamingDetails || {};
+  return broadcast === 'live' || Boolean(details.actualStartTime && !details.actualEndTime);
+}
+
 async function getYouTubeStreams(streamers, keywords, filterByKeyword) {
   if (!youtubeApiKey) return [];
 
-  const youtubeStreamers = streamers.filter((item) => item.platform === 'youtube' && (item.channelId || item.handle || item.url));
+  const youtubeStreamers = streamers.filter((item) => item.platform === 'youtube' && (item.id || item.channelId || item.channelid || item.channel_id || item.handle || item.url));
   const results = [];
 
   for (const item of youtubeStreamers) {
     const channelId = await resolveYouTubeChannelId(item);
     if (!channelId) {
-      console.warn(`[youtube] skipped: channel id not found for ${item.name || item.handle || item.url || 'unknown'}`);
+      console.warn(`[youtube] skipped: channel id not found for ${item.name || item.id || item.handle || item.url || 'unknown'}`);
       continue;
     }
 
-    const searchParams = new URLSearchParams({
-      part: 'snippet',
-      channelId,
-      eventType: 'live',
-      type: 'video',
-      maxResults: '1',
-      key: youtubeApiKey,
-    });
+    const uploadsPlaylistId = await getUploadPlaylistId(channelId);
+    if (!uploadsPlaylistId) continue;
 
-    const search = await fetchJson(`https://www.googleapis.com/youtube/v3/search?${searchParams}`);
-    const video = search.items?.[0];
+    const videoIds = await getRecentUploadVideoIds(uploadsPlaylistId, 5);
+    if (!videoIds.length) continue;
+
+    const videos = await getVideoDetails(videoIds);
+    const video = videos.find(isLiveVideo);
     if (!video) continue;
 
     const title = video.snippet?.title || 'YouTube Live';
     if (filterByKeyword && !includesKeyword(title, keywords)) continue;
 
-    const videoId = video.id?.videoId;
-    let viewers = 0;
-
-    if (videoId) {
-      const videoParams = new URLSearchParams({
-        part: 'liveStreamingDetails',
-        id: videoId,
-        key: youtubeApiKey,
-      });
-      const videoData = await fetchJson(`https://www.googleapis.com/youtube/v3/videos?${videoParams}`);
-      viewers = Number(videoData.items?.[0]?.liveStreamingDetails?.concurrentViewers || 0);
-    }
+    const videoId = video.id;
+    const viewers = Number(video.liveStreamingDetails?.concurrentViewers || 0);
 
     results.push({
       name: item.name || video.snippet?.channelTitle || 'YouTube',
@@ -198,8 +242,8 @@ async function getYouTubeStreams(streamers, keywords, filterByKeyword) {
       title,
       viewers,
       image: video.snippet?.thumbnails?.high?.url || video.snippet?.thumbnails?.medium?.url || './assets/stream-1.jpg',
-      url: videoId ? `https://www.youtube.com/watch?v=${videoId}` : item.url || '#',
-      startedAt: video.snippet?.publishedAt,
+      url: videoId ? `https://www.youtube.com/watch?v=${videoId}` : `https://www.youtube.com/channel/${channelId}/live`,
+      startedAt: video.liveStreamingDetails?.actualStartTime || video.snippet?.publishedAt,
     });
   }
 
@@ -207,20 +251,33 @@ async function getYouTubeStreams(streamers, keywords, filterByKeyword) {
 }
 
 function offlineRows(streamers) {
-  return streamers.map((item, index) => ({
-    name: item.name || item.login || item.handle || item.channelId || 'Unknown',
-    platform: item.platform,
-    status: 'OFFLINE',
-    title: '配信情報取得待ち',
-    viewers: 0,
-    image: item.image || placeholderImages[index % placeholderImages.length],
-    url: item.url || (item.platform === 'twitch' && extractTwitchLogin(item) ? `https://www.twitch.tv/${extractTwitchLogin(item)}` : item.platform === 'youtube' && item.handle ? `https://www.youtube.com/@${normalizeYouTubeHandle(item.handle)}` : '#'),
-  }));
+  return streamers.map((item, index) => {
+    const twitchLogin = item.platform === 'twitch' ? extractTwitchLogin(item) : '';
+    const youtubeChannelId = item.platform === 'youtube' ? getYouTubeChannelId(item) : '';
+
+    return {
+      name: item.name || item.id || item.login || item.handle || item.channelId || 'Unknown',
+      platform: item.platform,
+      status: 'OFFLINE',
+      title: '配信情報取得待ち',
+      viewers: 0,
+      image: item.image || placeholderImages[index % placeholderImages.length],
+      url:
+        item.platform === 'twitch' && twitchLogin
+          ? `https://www.twitch.tv/${twitchLogin}`
+          : item.platform === 'youtube' && youtubeChannelId
+            ? `https://www.youtube.com/channel/${youtubeChannelId}/live`
+            : item.url || '#',
+    };
+  });
 }
 
 async function main() {
   const config = JSON.parse(await fs.readFile(streamersPath, 'utf8'));
-  const streamers = config.streamers || [];
+  const streamers = (config.streamers || []).map((item) => ({
+    ...item,
+    platform: String(item.platform || '').toLowerCase(),
+  }));
   const keywords = config.keywords || [];
   const filterByKeyword = Boolean(config.filterByKeyword);
 
