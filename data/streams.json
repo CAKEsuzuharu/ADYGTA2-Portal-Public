@@ -1,6 +1,34 @@
 {
-  "updatedAt": "2026-06-03T10:54:52.756Z",
+  "updatedAt": "2026-06-03T10:56:57.642Z",
   "liveCount": 0,
   "totalViewers": 0,
-  "streams": []
+  "streams": [
+    {
+      "name": "すずはる",
+      "platform": "twitch",
+      "status": "OFFLINE",
+      "title": "配信情報取得待ち",
+      "viewers": 0,
+      "image": "./assets/stream-1.jpg",
+      "url": "https://www.twitch.tv/cakesuzuharu"
+    },
+    {
+      "name": "あでぃよん公式",
+      "platform": "youtube",
+      "status": "OFFLINE",
+      "title": "配信情報取得待ち",
+      "viewers": 0,
+      "image": "./assets/stream-2.jpg",
+      "url": "https://www.youtube.com/@Addition_04"
+    },
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "status": "OFFLINE",
+      "title": "配信情報取得待ち",
+      "viewers": 0,
+      "image": "./assets/stream-3.jpg",
+      "url": "https://www.twitch.tv/sasatikk"
+    }
+  ]
 }

@@ -7,5 +7,21 @@
     "adygta2"
   ],
   "filterByKeyword": true,
-  "streamers": []
+  "streamers": [
+    {
+      "name": "すずはる",
+      "platform": "twitch",
+      "url": "https://www.twitch.tv/cakesuzuharu"
+    },
+    {
+      "name": "あでぃよん公式",
+      "platform": "youtube",
+      "url": "https://www.youtube.com/@Addition_04"
+    },
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "url": "https://www.twitch.tv/sasatikk"
+    }
+  ]
 }
