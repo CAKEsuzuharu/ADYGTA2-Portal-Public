@@ -1,25 +1,6 @@
 {
-  "updatedAt": "2026-06-03T10:33:04.552Z",
+  "updatedAt": "2026-06-03T10:49:00.384Z",
   "liveCount": 0,
   "totalViewers": 0,
-  "streams": [
-    {
-      "name": "テスト",
-      "platform": "youtube",
-      "status": "OFFLINE",
-      "title": "配信情報取得待ち",
-      "viewers": 0,
-      "image": "./assets/stream-1.jpg",
-      "url": "https://www.youtube.com/@Addition_04"
-    },
-    {
-      "name": "テスト",
-      "platform": "twitch",
-      "status": "OFFLINE",
-      "title": "配信情報取得待ち",
-      "viewers": 0,
-      "image": "./assets/stream-2.jpg",
-      "url": "https://www.twitch.tv/cakesuzuharu"
-    }
-  ]
+  "streams": []
 }
