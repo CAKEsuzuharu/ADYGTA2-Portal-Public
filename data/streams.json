@@ -1,18 +1,8 @@
 {
-  "updatedAt": "2026-06-03T11:28:21.574Z",
-  "liveCount": 1,
-  "totalViewers": 4332,
+  "updatedAt": "2026-06-03T11:32:03.382Z",
+  "liveCount": 0,
+  "totalViewers": 0,
   "streams": [
-    {
-      "name": "テスト",
-      "platform": "twitch",
-      "status": "LIVE",
-      "title": "軽くTBH攻略最前線TVやってから別ゲーやる",
-      "viewers": 4332,
-      "image": "https://static-cdn.jtvnw.net/previews-ttv/live_user_shinjifromjapanxd-640x360.jpg",
-      "url": "https://www.twitch.tv/shinjifromjapanxd",
-      "startedAt": "2026-06-03T10:36:40Z"
-    },
     {
       "name": "すずはる",
       "platform": "twitch",
@@ -30,6 +20,24 @@
       "viewers": 0,
       "image": "./assets/stream-2.jpg",
       "url": "https://www.youtube.com/@Addition_04"
+    },
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "status": "OFFLINE",
+      "title": "配信情報取得待ち",
+      "viewers": 0,
+      "image": "./assets/stream-3.jpg",
+      "url": "https://www.twitch.tv/sasatikk"
+    },
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "status": "OFFLINE",
+      "title": "配信情報取得待ち",
+      "viewers": 0,
+      "image": "./assets/stream-4.jpg",
+      "url": "https://www.twitch.tv/shinjifromjapanxd"
     }
   ]
 }
