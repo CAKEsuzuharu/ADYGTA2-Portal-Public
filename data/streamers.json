@@ -22,6 +22,11 @@
       "name": "テスト",
       "platform": "twitch",
       "url": "https://www.twitch.tv/sasatikk"
+    },
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "url": "https://www.twitch.tv/shinjifromjapanxd"
     }
   ]
 }
