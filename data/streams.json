@@ -1,17 +1,16 @@
 {
-  "updatedAt": "2026-06-03T09:14:30.926Z",
-  "liveCount": 1,
-  "totalViewers": 464,
+  "updatedAt": "2026-06-03T10:02:12.952Z",
+  "liveCount": 0,
+  "totalViewers": 0,
   "streams": [
     {
       "name": "テスト",
       "platform": "youtube",
-      "status": "LIVE",
-      "title": "【24H NEWS LIVE】 最新ニュース ライブ配信中 ──24H LATEST NEWS LIVE NOW from JAPAN, Tokyo, NIPPON TV（日テレNEWS LIVE）",
-      "viewers": 464,
-      "image": "https://i.ytimg.com/vi/t9kwjZBLI-A/hqdefault_live.jpg",
-      "url": "https://www.youtube.com/watch?v=t9kwjZBLI-A",
-      "startedAt": "2025-01-27T04:10:34Z"
+      "status": "OFFLINE",
+      "title": "配信情報取得待ち",
+      "viewers": 0,
+      "image": "./assets/stream-1.jpg",
+      "url": "https://www.youtube.com/@Addition_04"
     },
     {
       "name": "テスト",
@@ -20,7 +19,7 @@
       "title": "配信情報取得待ち",
       "viewers": 0,
       "image": "./assets/stream-2.jpg",
-      "url": "https://www.twitch.tv/relaxingsoundschannel"
+      "url": "https://www.twitch.tv/cakesuzuharu"
     }
   ]
 }
