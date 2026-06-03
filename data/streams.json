@@ -1,24 +1,14 @@
 {
-  "updatedAt": "2026-06-03T18:58:38.940Z",
-  "liveCount": 2,
-  "totalViewers": 6430,
+  "updatedAt": "2026-06-03T19:04:20.194Z",
+  "liveCount": 1,
+  "totalViewers": 973,
   "streams": [
-    {
-      "name": "テスト",
-      "platform": "youtube",
-      "status": "LIVE",
-      "title": "VCCチーム練習！！コーチングでギアさんを最強にする！！『 スプラトゥーン3 』【 エビオ/にじさんじ 】",
-      "viewers": 5477,
-      "image": "https://i.ytimg.com/vi/yYIdwPw15KY/hqdefault_live.jpg",
-      "url": "https://www.youtube.com/watch?v=yYIdwPw15KY",
-      "startedAt": "2026-06-03T12:03:53Z"
-    },
     {
       "name": "テスト",
       "platform": "twitch",
       "status": "LIVE",
       "title": "人生で三度目のスプラトゥーン０時からチム練",
-      "viewers": 953,
+      "viewers": 973,
       "image": "https://static-cdn.jtvnw.net/previews-ttv/live_user_tonakaito_hendy-640x360.jpg",
       "url": "https://www.twitch.tv/tonakaito_hendy",
       "startedAt": "2026-06-03T14:04:28Z"
@@ -31,6 +21,24 @@
       "viewers": 0,
       "image": "./assets/stream-1.jpg",
       "url": "https://www.twitch.tv/cakesuzuharu"
+    },
+    {
+      "name": "あでぃよん公式",
+      "platform": "youtube",
+      "status": "OFFLINE",
+      "title": "配信情報取得待ち",
+      "viewers": 0,
+      "image": "./assets/stream-2.jpg",
+      "url": "https://www.youtube.com/channel/UC6_4lZN6W0M1ycmwaDwzjlA/live"
+    },
+    {
+      "name": "テスト",
+      "platform": "youtube",
+      "status": "OFFLINE",
+      "title": "配信情報取得待ち",
+      "viewers": 0,
+      "image": "./assets/stream-4.jpg",
+      "url": "https://www.youtube.com/channel/UCIytNcoz4pWzXfLda0DoULQ/live"
     }
   ]
 }
