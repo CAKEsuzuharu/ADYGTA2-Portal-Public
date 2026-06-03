@@ -1,27 +1,27 @@
 {
-  "updatedAt": "2026-06-03T19:35:04.958Z",
+  "updatedAt": "2026-06-03T19:48:51.024Z",
   "liveCount": 2,
-  "totalViewers": 1809,
+  "totalViewers": 1700,
   "streams": [
-    {
-      "name": "テスト",
-      "platform": "twitch",
-      "status": "LIVE",
-      "title": "人生で三度目のスプラトゥーン０時からチム練",
-      "viewers": 916,
-      "image": "https://static-cdn.jtvnw.net/previews-ttv/live_user_tonakaito_hendy-640x360.jpg",
-      "url": "https://www.twitch.tv/tonakaito_hendy",
-      "startedAt": "2026-06-03T14:04:28Z"
-    },
     {
       "name": "テスト",
       "platform": "youtube",
       "status": "LIVE",
       "title": "【Valorant】ﾏﾀｰﾘくん【麻倉シノ / ネオポルテ】",
-      "viewers": 893,
+      "viewers": 896,
       "image": "https://i.ytimg.com/vi/Z2BzAQLpSoU/hqdefault_live.jpg",
       "url": "https://www.youtube.com/watch?v=Z2BzAQLpSoU",
       "startedAt": "2026-06-03T15:16:36Z"
+    },
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "status": "LIVE",
+      "title": "人生で三度目のスプラトゥーン０時からチム練",
+      "viewers": 804,
+      "image": "https://static-cdn.jtvnw.net/previews-ttv/live_user_tonakaito_hendy-640x360.jpg",
+      "url": "https://www.twitch.tv/tonakaito_hendy",
+      "startedAt": "2026-06-03T14:04:28Z"
     },
     {
       "name": "すずはる",
