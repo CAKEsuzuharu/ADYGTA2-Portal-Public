@@ -1,18 +1,8 @@
 {
-  "updatedAt": "2026-06-03T11:27:11.779Z",
-  "liveCount": 2,
-  "totalViewers": 16569,
+  "updatedAt": "2026-06-03T11:28:21.574Z",
+  "liveCount": 1,
+  "totalViewers": 4332,
   "streams": [
-    {
-      "name": "テスト",
-      "platform": "twitch",
-      "status": "LIVE",
-      "title": "みんなで交流戦 w/ VCCの皆さん (ロレ3 かるび3 uruca3 なるせ3 イブ3 ふわっち3 ツルギ3)",
-      "viewers": 12237,
-      "image": "https://static-cdn.jtvnw.net/previews-ttv/live_user_sasatikk-640x360.jpg",
-      "url": "https://www.twitch.tv/sasatikk",
-      "startedAt": "2026-06-03T07:19:38Z"
-    },
     {
       "name": "テスト",
       "platform": "twitch",
