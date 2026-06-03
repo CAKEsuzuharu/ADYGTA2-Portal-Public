@@ -24,6 +24,7 @@ jobs:
       - run: node scripts/sync-streamers-from-sheet.mjs
         env:
           GOOGLE_SHEET_CSV_URL: ${{ secrets.GOOGLE_SHEET_CSV_URL }}
+          GOOGLE_SETTINGS_CSV_URL: ${{ secrets.GOOGLE_SETTINGS_CSV_URL }}
 
       - run: npm run update:streams
         env:

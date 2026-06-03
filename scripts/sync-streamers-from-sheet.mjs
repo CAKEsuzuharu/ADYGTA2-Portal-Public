@@ -1,18 +1,12 @@
 import fs from "fs/promises";
 
 const csvUrl = process.env.GOOGLE_SHEET_CSV_URL;
+const settingsCsvUrl = process.env.GOOGLE_SETTINGS_CSV_URL;
 
 if (!csvUrl) {
   console.log("GOOGLE_SHEET_CSV_URL is not set. Skipping sheet sync.");
   process.exit(0);
 }
-
-const res = await fetch(csvUrl);
-if (!res.ok) {
-  throw new Error(`Failed to fetch sheet CSV: ${res.status}`);
-}
-
-const csv = await res.text();
 
 function parseCSV(text) {
   const rows = [];
@@ -57,20 +51,40 @@ function parseCSV(text) {
   return rows;
 }
 
+/* -------------------------
+   Streamers Sheet
+-------------------------- */
+
+const res = await fetch(csvUrl);
+
+if (!res.ok) {
+  throw new Error(`Failed to fetch sheet CSV: ${res.status}`);
+}
+
+const csv = await res.text();
+
 const rows = parseCSV(csv);
 const headers = rows.shift().map((h) => h.trim().toLowerCase());
 
 const streamers = rows
   .map((row) => {
     const obj = {};
+
     headers.forEach((h, i) => {
       obj[h] = (row[i] || "").trim();
     });
+
     return obj;
   })
   .filter((r) => {
-    const enabled = String(r.enabled || "").toLowerCase();
-    return enabled === "true" || enabled === "1" || enabled === "yes" || enabled === "on";
+    const enabled = String(r.enable || r.enabled || "").toLowerCase();
+
+    return (
+      enabled === "true" ||
+      enabled === "1" ||
+      enabled === "yes" ||
+      enabled === "on"
+    );
   })
   .filter((r) => r.name && r.platform && r.url)
   .map((r) => ({
@@ -79,12 +93,83 @@ const streamers = rows
     url: r.url
   }));
 
+/* -------------------------
+   Settings Sheet
+-------------------------- */
+
+let filterByKeyword = true;
+let keywords = [
+  "ADYGTA",
+  "ADYGTA2",
+  "あでぃよんGTA",
+  "adygta",
+  "adygta2"
+];
+
+if (settingsCsvUrl) {
+  const settingsRes = await fetch(settingsCsvUrl);
+
+  if (!settingsRes.ok) {
+    throw new Error(
+      `Failed to fetch settings CSV: ${settingsRes.status}`
+    );
+  }
+
+  const settingsCsv = await settingsRes.text();
+
+  const settingsRows = parseCSV(settingsCsv);
+  const settingsHeaders = settingsRows
+    .shift()
+    .map((h) => h.trim().toLowerCase());
+
+  const settings = {};
+
+  settingsRows.forEach((row) => {
+    const obj = {};
+
+    settingsHeaders.forEach((h, i) => {
+      obj[h] = (row[i] || "").trim();
+    });
+
+    if (obj.key) {
+      settings[obj.key] = obj.value || "";
+    }
+  });
+
+  if (settings.filterByKeyword !== undefined) {
+    const v = settings.filterByKeyword.toLowerCase();
+
+    filterByKeyword =
+      v === "true" ||
+      v === "1" ||
+      v === "yes" ||
+      v === "on";
+  }
+
+  if (settings.keywords) {
+    keywords = settings.keywords
+      .split(",")
+      .map((v) => v.trim())
+      .filter(Boolean);
+  }
+}
+
+/* -------------------------
+   Output
+-------------------------- */
+
 const output = {
-  keywords: ["ADYGTA", "ADYGTA2", "あでぃよんGTA", "adygta", "adygta2"],
-  filterByKeyword: true,
+  keywords,
+  filterByKeyword,
   streamers
 };
 
-await fs.writeFile("data/streamers.json", JSON.stringify(output, null, 2) + "\n", "utf8");
+await fs.writeFile(
+  "data/streamers.json",
+  JSON.stringify(output, null, 2) + "\n",
+  "utf8"
+);
 
-console.log(`synced data/streamers.json (${streamers.length} streamers)`);
+console.log(
+  `synced data/streamers.json (${streamers.length} streamers)`
+);
