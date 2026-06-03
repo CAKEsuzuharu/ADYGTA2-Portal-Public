@@ -1,8 +1,18 @@
 {
-  "updatedAt": "2026-06-03T18:09:43.145Z",
-  "liveCount": 0,
-  "totalViewers": 0,
+  "updatedAt": "2026-06-03T18:12:50.347Z",
+  "liveCount": 1,
+  "totalViewers": 1172,
   "streams": [
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "status": "LIVE",
+      "title": "人生で三度目のスプラトゥーン０時からチム練",
+      "viewers": 1172,
+      "image": "https://static-cdn.jtvnw.net/previews-ttv/live_user_tonakaito_hendy-640x360.jpg",
+      "url": "https://www.twitch.tv/tonakaito_hendy",
+      "startedAt": "2026-06-03T14:04:28Z"
+    },
     {
       "name": "すずはる",
       "platform": "twitch",

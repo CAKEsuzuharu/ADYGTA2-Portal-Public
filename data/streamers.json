@@ -6,17 +6,22 @@
     "adygta",
     "adygta2"
   ],
-  "filterByKeyword": true,
+  "filterByKeyword": false,
   "streamers": [
     {
       "name": "すずはる",
       "platform": "twitch",
-      "id": "https://www.twitch.tv/cakesuzuharu"
+      "id": "cakesuzuharu"
     },
     {
       "name": "あでぃよん公式",
       "platform": "youtube",
       "id": "https://www.youtube.com/@Addition_04"
+    },
+    {
+      "name": "テスト",
+      "platform": "twitch",
+      "id": "tonakaito_hendy"
     }
   ]
 }
