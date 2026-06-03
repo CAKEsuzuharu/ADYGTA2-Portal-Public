@@ -28,8 +28,9 @@ function parseCSV(text) {
         cell += c;
       }
     } else {
-      if (c === '"') quoted = true;
-      else if (c === ",") {
+      if (c === '"') {
+        quoted = true;
+      } else if (c === ",") {
         row.push(cell);
         cell = "";
       } else if (c === "\n") {
@@ -77,7 +78,9 @@ const streamers = rows
     return obj;
   })
   .filter((r) => {
-    const enabled = String(r.enable || r.enabled || "").toLowerCase();
+    const enabled = String(
+      r.enable || r.enabled || ""
+    ).toLowerCase();
 
     return (
       enabled === "true" ||
@@ -98,6 +101,7 @@ const streamers = rows
 -------------------------- */
 
 let filterByKeyword = true;
+
 let keywords = [
   "ADYGTA",
   "ADYGTA2",
@@ -118,39 +122,45 @@ if (settingsCsvUrl) {
   const settingsCsv = await settingsRes.text();
 
   const settingsRows = parseCSV(settingsCsv);
-  const settingsHeaders = settingsRows
-    .shift()
-    .map((h) => h.trim().toLowerCase());
 
-  const settings = {};
+  if (settingsRows.length > 0) {
+    const settingsHeaders = settingsRows
+      .shift()
+      .map((h) => h.trim().toLowerCase());
 
-  settingsRows.forEach((row) => {
-    const obj = {};
+    const settings = {};
 
-    settingsHeaders.forEach((h, i) => {
-      obj[h] = (row[i] || "").trim();
+    settingsRows.forEach((row) => {
+      const obj = {};
+
+      settingsHeaders.forEach((h, i) => {
+        obj[h] = (row[i] || "").trim();
+      });
+
+      if (obj.key) {
+        settings[obj.key.trim().toLowerCase()] =
+          (obj.value || "").trim();
+      }
     });
 
-    if (obj.key) {
-      settings[obj.key] = obj.value || "";
+    console.log("SETTINGS =", settings);
+
+    if (settings.filterbykeyword !== undefined) {
+      const v = settings.filterbykeyword.toLowerCase();
+
+      filterByKeyword =
+        v === "true" ||
+        v === "1" ||
+        v === "yes" ||
+        v === "on";
     }
-  });
 
-  if (settings.filterByKeyword !== undefined) {
-    const v = settings.filterByKeyword.toLowerCase();
-
-    filterByKeyword =
-      v === "true" ||
-      v === "1" ||
-      v === "yes" ||
-      v === "on";
-  }
-
-  if (settings.keywords) {
-    keywords = settings.keywords
-      .split(",")
-      .map((v) => v.trim())
-      .filter(Boolean);
+    if (settings.keywords) {
+      keywords = settings.keywords
+        .split(",")
+        .map((v) => v.trim())
+        .filter(Boolean);
+    }
   }
 }
 
