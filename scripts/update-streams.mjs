@@ -209,42 +209,97 @@ function isLiveVideo(video) {
 async function getYouTubeStreams(streamers, keywords, filterByKeyword) {
   if (!youtubeApiKey) return [];
 
-  const youtubeStreamers = streamers.filter((item) => item.platform === 'youtube' && (item.id || item.channelId || item.channelid || item.channel_id || item.handle || item.url));
+  const youtubeStreamers = streamers.filter(
+    (item) =>
+      item.platform === 'youtube' &&
+      (
+        item.id ||
+        item.channelId ||
+        item.channelid ||
+        item.channel_id ||
+        item.handle ||
+        item.url
+      )
+  );
+
   const results = [];
 
   for (const item of youtubeStreamers) {
-    const channelId = await resolveYouTubeChannelId(item);
-    if (!channelId) {
-      console.warn(`[youtube] skipped: channel id not found for ${item.name || item.id || item.handle || item.url || 'unknown'}`);
+    try {
+      const channelId = await resolveYouTubeChannelId(item);
+
+      if (!channelId) {
+        console.warn(
+          `[youtube] skipped: channel id not found for ${
+            item.name || item.id || item.handle || item.url || 'unknown'
+          }`
+        );
+        continue;
+      }
+
+      const uploadsPlaylistId = await getUploadPlaylistId(channelId);
+
+      if (!uploadsPlaylistId) {
+        console.warn(
+          `[youtube] skipped ${item.name || channelId}: uploads playlist not found`
+        );
+        continue;
+      }
+
+      const videoIds = await getRecentUploadVideoIds(
+        uploadsPlaylistId,
+        5
+      );
+
+      if (!videoIds.length) continue;
+
+      const videos = await getVideoDetails(videoIds);
+      const video = videos.find(isLiveVideo);
+
+      if (!video) continue;
+
+      const title = video.snippet?.title || 'YouTube Live';
+
+      if (
+        filterByKeyword &&
+        !includesKeyword(title, keywords)
+      ) {
+        continue;
+      }
+
+      const videoId = video.id;
+      const viewers = Number(
+        video.liveStreamingDetails?.concurrentViewers || 0
+      );
+
+      results.push({
+        name:
+          item.name ||
+          video.snippet?.channelTitle ||
+          'YouTube',
+        platform: 'youtube',
+        status: 'LIVE',
+        title,
+        viewers,
+        image:
+          video.snippet?.thumbnails?.high?.url ||
+          video.snippet?.thumbnails?.medium?.url ||
+          './assets/stream-1.jpg',
+        url: videoId
+          ? `https://www.youtube.com/watch?v=${videoId}`
+          : `https://www.youtube.com/channel/${channelId}/live`,
+        startedAt:
+          video.liveStreamingDetails?.actualStartTime ||
+          video.snippet?.publishedAt,
+      });
+    } catch (error) {
+      console.warn(
+        `[youtube] skipped ${
+          item.name || item.id || 'unknown'
+        }: ${error.message}`
+      );
       continue;
     }
-
-    const uploadsPlaylistId = await getUploadPlaylistId(channelId);
-    if (!uploadsPlaylistId) continue;
-
-    const videoIds = await getRecentUploadVideoIds(uploadsPlaylistId, 5);
-    if (!videoIds.length) continue;
-
-    const videos = await getVideoDetails(videoIds);
-    const video = videos.find(isLiveVideo);
-    if (!video) continue;
-
-    const title = video.snippet?.title || 'YouTube Live';
-    if (filterByKeyword && !includesKeyword(title, keywords)) continue;
-
-    const videoId = video.id;
-    const viewers = Number(video.liveStreamingDetails?.concurrentViewers || 0);
-
-    results.push({
-      name: item.name || video.snippet?.channelTitle || 'YouTube',
-      platform: 'youtube',
-      status: 'LIVE',
-      title,
-      viewers,
-      image: video.snippet?.thumbnails?.high?.url || video.snippet?.thumbnails?.medium?.url || './assets/stream-1.jpg',
-      url: videoId ? `https://www.youtube.com/watch?v=${videoId}` : `https://www.youtube.com/channel/${channelId}/live`,
-      startedAt: video.liveStreamingDetails?.actualStartTime || video.snippet?.publishedAt,
-    });
   }
 
   return results;
