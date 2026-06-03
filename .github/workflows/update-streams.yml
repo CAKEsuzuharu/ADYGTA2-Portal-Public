@@ -1,6 +1,6 @@
 name: Update streams
 
-"on":
+on:
   schedule:
     - cron: "*/5 * * * *"
   workflow_dispatch:
