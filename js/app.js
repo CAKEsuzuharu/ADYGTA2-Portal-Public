@@ -137,7 +137,12 @@ async function loadStreams() {
   renderStreams(fallbackStreams);
 
   try {
-    const response = await fetch(`./data/streams.json?t=${Date.now()}`, { cache: "no-store" });
+    const response = await fetch(
+      `https://adygta-streams.suzuharu-cakes-1784.workers.dev/streams?t=${Date.now()}`,
+      {
+        cache: "no-store",
+      }
+    );
 
     if (!response.ok) {
       throw new Error("stream json not found");
