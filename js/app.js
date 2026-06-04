@@ -138,7 +138,7 @@ async function loadStreams() {
 
   try {
     const response = await fetch(
-      `https://adygta-streams.suzuharu-cakes-1784.workers.dev/streams?t=${Date.now()}`,
+      `https://api.adygta2.jp/streams?t=${Date.now()}`,
       {
         cache: "no-store",
       }
