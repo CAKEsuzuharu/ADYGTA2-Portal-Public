@@ -163,7 +163,7 @@ async function loadStreams() {
 function setupReveal() {
   const targets = [
     ...document.querySelectorAll(
-      ".live-section, .feature-section, .text-grid article, .support-grid article, .timeline article, .apply-panel, .page-hero .container, .stream-card"
+      ".live-section, .feature-section, .text-grid article, .support-grid article, .timeline article, .apply-panel, .apply-pv-card, .page-hero .container, .stream-card"
     ),
   ];
 
