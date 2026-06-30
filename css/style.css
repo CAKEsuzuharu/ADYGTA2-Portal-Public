@@ -732,7 +732,7 @@ body>main .container,.hero-inner,.live-section.container,.feature-section.contai
 }
 
 
-.status-badge{display:inline-block;background:#ffb800;color:#111;padding:8px 14px;border-radius:999px;font-weight:700;margin-bottom:16px}
+.status-badge{display:inline-block;background:#00c20a;color:#111;padding:8px 14px;border-radius:999px;font-weight:700;margin-bottom:16px}
 .schedule-panel{margin-top:40px}
 .timeline-item{display:flex;gap:24px;padding:20px 0;border-left:3px solid rgba(255,255,255,.15);margin-left:10px;padding-left:24px}
 .timeline-date{min-width:220px;font-weight:700;color:#9fe870}
